@@ -1,0 +1,14 @@
+# Build output
+target/
+
+# Eclipse/STS files
+.settings/
+.project
+.classpath
+
+# Environment secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
