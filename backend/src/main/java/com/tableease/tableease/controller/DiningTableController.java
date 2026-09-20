@@ -3,6 +3,7 @@ package com.tableease.tableease.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,22 +27,22 @@ public class DiningTableController {
 		return diningTableService.getAllTables();
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/tables")
 	public DiningTable createDiningTable(@Valid  @RequestBody DiningTable diningTable) {
 		return diningTableService.createTable(diningTable);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/tables/{id}")
 	public DiningTable updateDiningTable(@PathVariable Integer id,@Valid @RequestBody DiningTable diningTable){
 		return diningTableService.updateTable(id, diningTable);
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/tables/{id}")
 	public void deleteDiningTable(@PathVariable Integer id) {
 		diningTableService.deleteTable(id);
-	}
-	
-	
-		
+	}	
 }
 	

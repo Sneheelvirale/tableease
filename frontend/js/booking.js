@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const alertContainer = document.getElementById('alert-container');
     const tableIdInput = document.getElementById('tableId');
 
+
     const urlParams = new URLSearchParams(window.location.search);
     const selectedTableId = urlParams.get('tableId');
     if (selectedTableId) {
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const dateVal = document.getElementById('bookingDate').value;
         const timeVal = document.getElementById('bookingTime').value;
+        const token = localStorage.getItem('token');
 
         // ISO-8601 format: YYYY-MM-DDTHH:MM:SS (Spring Boot LocalDateTime compatibility)
         const formattedBookingTime = `${dateVal}T${timeVal}:00`;
@@ -28,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('http://127.0.0.1:8080/bookings', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(bookingData)
         })
