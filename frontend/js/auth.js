@@ -13,6 +13,35 @@ function showAlert(message,type='danger'){
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Dynamic Navbar State Handling
+    const authLink = document.getElementById('navbar-auth-link');
+    const myBookingLink = document.getElementById('my-booking-link');
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        if (authLink) {
+            authLink.textContent = 'Logout';
+            authLink.href = '#';
+            authLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            });
+        }
+        if (myBookingLink) { 
+            myBookingLink.style.display = 'block';
+        }
+    } else {
+        if (authLink) {
+            authLink.textContent = 'Login';
+            authLink.href = 'login.html';
+        }
+        if (myBookingLink) {
+            myBookingLink.style.display = 'none';
+        }
+    }
+
 // Handle User Registration
 const registerForm = document.getElementById('register-form');
 if(registerForm){
@@ -48,39 +77,40 @@ if(registerForm){
 }
 
 const loginForm = document.getElementById('login-form');
-if(loginForm){
-    loginForm.addEventListener('submit',async(e)=>{
-        e.preventDefault();
+    if(loginForm){
+        loginForm.addEventListener('submit',async(e)=>{
+            e.preventDefault();
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-        try{
-            const response = await fetch(`${API_BASE_URL}/login`,{
-                method: 'POST',
-                headers: {
-                    'Content-Type':'application/json'  
-                },
-                body: JSON.stringify({username,password})
-            });
+            try{
+                const response = await fetch(`${API_BASE_URL}/login`,{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':'application/json'  
+                    },
+                    body: JSON.stringify({username,password})
+                });
 
-            if(response.ok){
-                const data = await response.json();
-                if(data.token){
-                    localStorage.setItem('token',data.token);
-                    showAlert('Login successful! Redirecting...','success');
-                    setTimeout(()=>{
-                        window.location.href = 'booking.html';
-                    },1500);
+                if(response.ok){
+                    const data = await response.json();
+                    if(data.token){
+                        localStorage.setItem('token',data.token);
+                        showAlert('Login successful! Redirecting...','success');
+                        setTimeout(()=>{
+                            window.location.href = 'booking.html';
+                        },1500);
+                    }else{
+                        showAlert('Invalid token received from server.');
+                    }
                 }else{
-                    showAlert('Invalid token received from server.');
+                    showAlert('Invalid username or password.');
                 }
-            }else{
-                showAlert('Invalid username or password.');
+            }catch(error){
+                console.error('Error: ',error);
+                showAlert('Server connection error.');
             }
-        }catch(error){
-            console.error('Error: ',error);
-            showAlert('Server connection error.');
-        }
-    });
-}
+        });
+    }
+});

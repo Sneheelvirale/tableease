@@ -38,6 +38,10 @@ public class BookingService {
 		return bookingRepository.findAll();
 	}
 	
+	public List<Booking> getBookingsByCustomerName(String customerName){
+		return bookingRepository.findByCustomerName(customerName);
+	}
+	
 	public void deleteBooking(Integer id) {
 		if(!bookingRepository.existsById(id)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Booking not found with id:"+id);
