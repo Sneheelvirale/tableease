@@ -42,11 +42,21 @@ public class BookingService {
 		return bookingRepository.findByCustomerName(customerName);
 	}
 	
-	public void deleteBooking(Integer id) {
-		if(!bookingRepository.existsById(id)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Booking not found with id:"+id);
-		}else {
-			bookingRepository.deleteById(id);
-		}
+	
+	
+	public boolean cancelUserBooking(Integer bookingId, String customerName) {
+	    Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
+	    
+	    if (optionalBooking.isPresent()) {
+	        Booking booking = optionalBooking.get();
+	        // Safe equals check to prevent NullPointerException
+	        if (customerName != null && customerName.equalsIgnoreCase(booking.getCustomerName())) {
+	            bookingRepository.deleteById(bookingId);
+	            return true;
+	        }
+	    }
+	    return false;
 	}
+
+	
 }

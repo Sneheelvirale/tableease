@@ -23,10 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authLink) {
             authLink.textContent = 'Logout';
             authLink.href = '#';
+            authLink.classList.add('text-danger');
             authLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                localStorage.removeItem('token');
-                window.location.href = 'login.html';
+                if(confirm('Are you sure you want to logout?')){
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                }
             });
         }
         if (myBookingLink) { 
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authLink) {
             authLink.textContent = 'Login';
             authLink.href = 'login.html';
+            authLink.classList.remove('text-danger');
         }
         if (myBookingLink) {
             myBookingLink.style.display = 'none';
@@ -55,10 +59,7 @@ if(registerForm){
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body : JSON.stringify({
-                    username:username,
-                    password:password                                    
-                })
+                body : JSON.stringify({ username, password })
             });
             if(response.ok){
                 showAlert('Registration successful! Redirecting to login...','success');
@@ -66,8 +67,17 @@ if(registerForm){
                     window.location.href = 'login.html';
                 },1500);
             }else{
-                const errorText = await response.text();
-                showAlert(errorText || 'Registration failed.');
+                let errorMessage = 'Registration failed.';
+                const rawTest = await response.text().catch(()=>'');
+                if(rawTest){
+                    try{
+                        const errorData = JSON.parse(rawTest);
+                        errorMessage = errorData.message || errorData.error || errorMessage;
+                    }catch(_){
+                        errorMessage = rawTest;
+                    }
+                }
+                showAlert(errorMessage);
             }
         }catch(error){
             console.error('Error: ',error);
@@ -95,8 +105,9 @@ const loginForm = document.getElementById('login-form');
 
                 if(response.ok){
                     const data = await response.json();
-                    if(data.token){
-                        localStorage.setItem('token',data.token);
+                    const jwtToken = data.token || data.jwtToken || data.jwt;
+                    if(jwtToken){
+                        localStorage.setItem('token',jwtToken);
                         showAlert('Login successful! Redirecting...','success');
                         setTimeout(()=>{
                             window.location.href = 'booking.html';
