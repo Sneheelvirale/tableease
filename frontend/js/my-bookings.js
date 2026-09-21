@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadBookings(){
+        if (loadingSpinner) loadingSpinner.classList.remove('d-none');
         fetch('http://127.0.0.1:8080/bookings', {
             method: 'GET',
             headers: {
@@ -38,20 +39,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(bookings => {
-            loadingSpinner.classList.add('d-none');
+            if(loadingSpinner) loadingSpinner.classList.add('d-none');
 
             if (!bookings || bookings.length === 0) {
                 if(bookingsTable) bookingsTable.classList.add('d-none');
-                alertContainer.innerHTML = `
-                    <div class="alert alert-info text-center" role="alert">
-                        You have no active table bookings yet. <a href="booking.html" class="alert-link">Book a table now!</a>
-                    </div>
-                `;
+                if(alertContainer){
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-info text-center" role="alert">
+                            You have no active table bookings yet. <a href="booking.html" class="alert-link">Book a table now!</a>
+                        </div>
+                    `;
+                }
                 return;
             }
 
             // Table ko display karo
-            bookingsTable.classList.remove('d-none');
+            if(bookingsTable) bookingsTable.classList.remove('d-none');
 
             // Target ONLY <tbody> (bookingsList) instead of bookingsTable
             bookingsList.innerHTML = bookings.map(b => `
@@ -72,11 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             if(loadingSpinner) loadingSpinner.classList.add('d-none');
-            alertContainer.innerHTML = `
-                <div class="alert alert-danger text-center" role="alert">
-                    ${error.message}
-                </div>
-            `;
+            if (bookingsTable) bookingsTable.classList.add('d-none');
+            if(alertContainer){
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger text-center" role="alert">
+                        ${error.message}
+                    </div>
+                `;
+            }
             console.error('Error fetching bookings:', error);
         });
     }
@@ -97,20 +103,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorData = await response.json().catch(()=>({}));
                 throw new Error(errorData.message ||'Failed to cancel booking');
             }
-            alertContainer.innerHTML=`
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Booking #${id} cancelled successfully.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
+            if(alertContainer){
+                alertContainer.innerHTML=`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Booking #${id} cancelled successfully.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            }
             loadBookings();
         })
         .catch(error =>{
-            alertContainer.innerHTML =`
-                <div class="alert alert-danger text-center" role="alert">
-                    ${error.message}
-                </div>
-            `;
+            if(alertContainer){
+                alertContainer.innerHTML =`
+                    <div class="alert alert-danger text-center" role="alert">
+                        ${error.message}
+                    </div>
+                `;
+            }
             console.error('Error cancelling booking :',error);
         });
     }
