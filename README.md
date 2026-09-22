@@ -34,6 +34,20 @@ The backend follows a standard layered structure:
 
 The frontend fetches data asynchronously from the backend using the Fetch API, dynamically renders it into the DOM as Bootstrap-styled cards, and stores the JWT in `localStorage` after login, attaching it as a `Authorization: Bearer` header on requests to protected endpoints.
 
+## 🏗️ System Architecture & Design Pattern
+
+This project follows a **Decoupled RESTful Architecture** separating the server logic from the client layer:
+
+* **Backend Architecture (Spring Boot):** 
+  * Layered REST API pattern (`Controller` ➔ `Service` ➔ `Repository` ➔ `Entity`).
+  * Exposes stateless JSON endpoints.
+  * Secured using Spring Security with JWT (JSON Web Tokens) and Role-Based Access Control (RBAC).
+
+* **Frontend Architecture (Client):** 
+  * Decoupled Vanilla JavaScript client (`HTML5`, `CSS3/Bootstrap`, `JavaScript ES6`).
+  * Consumes backend REST APIs asynchronously using the `fetch` API.
+  * Dynamically updates the UI via client-side DOM manipulation.
+
 ## Features
 
 - **Menu Browsing** — View all available menu items with pricing, rendered dynamically from the database. Public, no login required.
