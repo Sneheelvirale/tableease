@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tableease-mysql
+    environment:
+      MYSQL_DATABASE: tableease_db 
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+      build: ./backend
+      container_name: tableease-backend
+      ports:
+        - "8080:8080"
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:mysql://tableease-mysql:3306/tableease_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+        - DB_USERNAME=root
+        - DB_PASSWORD=
+      depends_on:
+        mysql:
+          condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: tableease-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

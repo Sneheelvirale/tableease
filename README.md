@@ -33,7 +33,6 @@ The backend follows a standard layered structure:
 - **Security** — Password hashing via `BCryptPasswordEncoder`; stateless authentication via signed JWTs, validated on every request by a custom `OncePerRequestFilter`; route-level rules distinguishing public endpoints (browsing menu/tables, auth) from protected ones (bookings, all writes); method-level `@PreAuthorize` for admin-only actions.
 
 The frontend fetches data asynchronously from the backend using the Fetch API, dynamically renders it into the DOM as Bootstrap-styled cards, and stores the JWT in `localStorage` after login, attaching it as a `Authorization: Bearer` header on requests to protected endpoints.
-
 ## 🏗️ System Architecture & Design Pattern
 
 This project follows a **Decoupled RESTful Architecture** separating the server logic from the client layer:
