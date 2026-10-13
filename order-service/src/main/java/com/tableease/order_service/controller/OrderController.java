@@ -21,13 +21,17 @@ public class OrderController {
 
     @PostMapping
     public Order placeOrder(@RequestBody Order order) {
-        // Menu Service se item details fetch karna using OpenFeign
-        Object menuItem = menuClient.getMenuItemById(order.getMenuId());
+        // Feign Client call to menu-service
+        Map<String, Object> menuItem = menuClient.getMenuItemById(order.getMenuId());
         
-        // Yahan aap price calculate karke order save kar sakte hain
+        if (menuItem != null && menuItem.get("price") != null) {
+            Double price = Double.valueOf(menuItem.get("price").toString());
+            order.setTotalPrice(price * order.getQuantity());
+        } else {
+            order.setTotalPrice(0.0);
+        }
+        
         order.setStatus("CREATED");
-        order.setTotalPrice(299.0); // Dummy or parsed from menuItem
-        
         return orderRepository.save(order);
     }
 

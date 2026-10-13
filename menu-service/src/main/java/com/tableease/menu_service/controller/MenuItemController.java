@@ -19,6 +19,11 @@ public class MenuItemController {
     public List<MenuItem> getAllMenuItems() {
         return menuItemRepository.findAll();
     }
+    
+    @GetMapping("/menu/{id}")
+    public MenuItem getMenuItemById(@PathVariable Integer id) {
+        return menuItemRepository.findById(id).orElseThrow(() -> new RuntimeException("Menu item not found with id: " + id));
+    }
 
     @PostMapping("/menu")
     public MenuItem createMenuItem(@Valid @RequestBody MenuItem menuItem) {
